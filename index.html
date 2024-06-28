@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .navbar-left {
+            display: flex;
+            align-items: center;
+        }
+        .navbar-left img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        .navbar-right a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+        .navbar-right a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            padding: 20px;
+        }
+        #image-container img {
+            max-width: 100%;
+            margin-top: 20px;
+        }
+        .lime-explanation,
+        .lime-heatmap,
+        .prediction-result {
+            margin-top: 20px;
+        }
+        .lime-heatmap {
+            width: 100%;
+            height: auto;
+        }
+        .lime-explanation {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .prediction-result {
+            margin: 10px 0;
+        }
+        .high-confidence {
+            color: green;
+        }
+        .medium-confidence {
+            color: orange;
+        }
+        .low-confidence {
+            color: red;
+        }
+        .info-section {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+        .info-section h2 {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #444;
+        }
+        .info-section p,
+        .info-section ul {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .info-section ul {
+            padding-left: 20px;
+            list-style-position: inside;
+        }
+        .info-section ul li {
+            margin-left: 0;
+            text-align: left;
+            
+        }
+        .info-section h2 {
+            margin-left: 0;
+            text-align: left;
+            
+        }
+        .info-section p {
+            margin-left: 0;
+            text-align: left;
+            
+        }
+        
+        .dos {
+            color: green;
+        }
+        .donts {
+            color: red;
+        }
+        .info-section ul.donts li {
+            color: red;
+        }
+        .navbar div {
+    color: rgba(61, 63, 56, 0.998);
+    font-size: 18px;
+    
+    font-family: "Times New Roman", Times, serif;
+}
+.navbar-left  div {
+    color: rgba(96, 97, 95, 0.683);
+    font-size: 25px;
+    font-weight: bold;
+    font-family: 'Bebas Neue'
+}
+
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chest X-Ray Classifier</title>
+    
+    <meta name="author" content="Jayashree Natrajan">
+
+    <!-- Favicon -->
+    <link rel="icon" href="./JayashreeNatrajan.jpg" type="image/x-icon">
+
+    <!-- Open Graph metadata for social media sharing -->
+    <meta property="og:title" content="Chest X-Ray Classifier">
+    <meta property="og:description" content="A web application utilizing Deep learning to classify chest X-ray images.">
+    <meta property="og:image" content="./ChestXRay_HomePage.jpg">
+    <meta property="og:url" content="https://github.com/JAYASHREENATRAJAN/Chestxrayclassification">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card metadata -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Chest X-Ray Classifier">
+    <meta name="twitter:description" content="A web application utilizing deep learning to classify chest X-ray images.">
+    <meta name="twitter:image" content="./ChestXRay_HomePage.jpg">
+
+    <!-- TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <!-- Teachable Machine Image Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+
+    <!-- Link to CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <img src="./JayashreeNatrajan.jpg" alt="Logo">
+            <div>Pulmonaryhelp</div>
+        </div>
+        <div class="navbar-right">
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="summary.html" target="_blank">Model Summary</a>
+            <a href="details.html" target="_blank">Details</a>
+            <a href="https://github.com/JAYASHREENATRAJAN/Chestxrayclassification" target="_blank">Source Code</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="home" class="content">
+            <h1 id="projectName">Chest X-Ray Classifier</h1>
+            <h2 id="projectDescription">DL Based Chest X-Ray Image Predictor</h2>
+            <input type="file" accept="image/*" id="image-selector" />
+            <div id="image-container"></div>
+            <button type="button" id="predict-button" disabled>Predict</button>
+            <div id="label-container"></div>
+            <div id="explanation-container"></div>
+            <div id="info-container"></div> <!-- Add this div for additional info -->
+        </div>
+
+        <div id="about" class="section">
+            <h1>About</h1>
+            <p>This project utilizes deep learning to classify chest X-ray images. It allows for easy integration and deployment in web applications.</p>
+            
+            <h3>Features</h3>
+            <li>Predicts various conditions from chest X-ray images.</li>
+            <li>Utilizes a trained model based on a comprehensive dataset.</li>
+            <li>Provides real-time predictions with confidence levels.</li>
+            
+            <h3>How to Use</h3>
+            <li>Click on the "Choose File" button to upload a chest X-ray image.</li>
+            <li>Click the "Predict" button to view the predicted condition of the uploaded X-ray.</li>
+            <li>The prediction result will be displayed along with the confidence level.</li>
+            
+            <h3>Additional Information</h3>
+            <li>The model has been meticulously trained on a diverse dataset, ensuring robust performance. Each image undergoes rigorous analysis to extract meaningful features, enabling the model to make informed predictions.</li>
+            
+            <li>However, it's essential to acknowledge that while the model strives for accuracy, results may occasionally be subject to limitations inherent in any machine learning system. Factors such as image quality, lighting conditions, and variations in image content may impact the model's predictions.</li>
+        </div>
+    </div>
+
+    <script>
+        // Constants for model URLs
+        const VALIDATION_MODEL_URL = "https://teachablemachine.withgoogle.com/models/RWS43Gb4-/";
+        const PREDICTION_MODEL_URL = "https://teachablemachine.withgoogle.com/models/BAxKGIxkh/";
+
+        // Variables for models and containers
+        let validationModel, predictionModel, labelContainer, explanationContainer;
+
+        // Initialize application
+        async function init() {
+            try {
+                // Load validation model
+                const validationModelURL = VALIDATION_MODEL_URL + "model.json";
+                const validationMetadataURL = VALIDATION_MODEL_URL + "metadata.json";
+                validationModel = await tmImage.load(validationModelURL, validationMetadataURL);
+
+                // Load prediction model
+                const predictionModelURL = PREDICTION_MODEL_URL + "model.json";
+                const predictionMetadataURL = PREDICTION_MODEL_URL + "metadata.json";
+                predictionModel = await tmImage.load(predictionModelURL, predictionMetadataURL);
+
+                // Set up containers
+                labelContainer = document.getElementById("label-container");
+                explanationContainer = document.getElementById("explanation-container");
+
+                // Event listener for image upload
+                document.getElementById('image-selector').addEventListener('change', handleImageUpload);
+
+                // Event listener for predict button
+                document.getElementById('predict-button').addEventListener('click', predict);
+
+                console.log("Models loaded successfully.");
+            } catch (error) {
+                console.error("Failed to load models:", error);
+                alert("Error loading models. Please try again later.");
+            }
+        }
+
+        // Function to handle image upload
+        async function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const img = document.createElement('img');
+                img.src = window.URL.createObjectURL(file);
+                img.id = 'selected-image';
+                img.onload = () => window.URL.revokeObjectURL(img.src);
+
+                const imageContainer = document.getElementById('image-container');
+                imageContainer.innerHTML = '';
+                imageContainer.appendChild(img);
+
+                document.getElementById('predict-button').disabled = false;
+                labelContainer.innerHTML = "";
+                explanationContainer.innerHTML = "";
+                document.getElementById('info-container').innerHTML = ""; // Clear info-container
+            }
+        }
+
+        // Function to validate image as chest X-ray
+        async function validateImage(imageElement) {
+            const prediction = await validationModel.predict(imageElement);
+            const chestXRayClass = prediction.find(p => p.className === "Chest X-ray");
+            return chestXRayClass && chestXRayClass.probability > 0.5;
+        }
+
+        // Function to predict with your model
+        async function predict() {
+            const imageElement = document.getElementById('selected-image');
+            if (imageElement) {
+                const isValid = await validateImage(imageElement);
+                if (isValid) {
+                    const predictions = await predictionModel.predict(imageElement);
+
+                    // Extract probabilities for each class
+                    const probabilities = {};
+                    predictions.forEach(p => probabilities[p.className] = p.probability);
+
+                    // Display prediction results
+                    displayPredictionResults(probabilities);
+
+                    // Visualize LIME-like explanations (simulate for demonstration)
+                    const limeCanvas = await visualizeLimeExplanations(imageElement);
+                    explanationContainer.innerHTML = "";
+                    explanationContainer.appendChild(limeCanvas);
+                } else {
+                    labelContainer.innerHTML = "The uploaded image is not a chest X-ray. Please upload a valid chest X-ray image.";
+                }
+            }
+        }
+
+        // Function to display prediction results
+        function displayPredictionResults(probabilities) {
+            labelContainer.innerHTML = "";
+
+            // Find the class with the highest probability
+            let maxProbability = 0;
+            let maxClass = "";
+            for (const className in probabilities) {
+                const classProbability = probabilities[className];
+                if (classProbability > maxProbability) {
+                    maxProbability = classProbability;
+                    maxClass = className;
+                }
+            }
+
+            // Display each prediction with styling based on confidence
+            for (const className in probabilities) {
+                const classProbability = probabilities[className];
+                const resultElement = document.createElement('div');
+                resultElement.classList.add('prediction-result');
+
+                // Apply class based on confidence level
+                if (className === maxClass) {
+                    if (classProbability >= 0.7) {
+                        resultElement.classList.add('high-confidence');
+                    } else if (classProbability >= 0.4) {
+                        resultElement.classList.add('medium-confidence');
+                    } else {
+                        resultElement.classList.add('low-confidence');
+                    }
+                }
+
+                // Display prediction text
+                const predictionText = document.createElement('span');
+                predictionText.textContent = `${className}: ${(classProbability * 100).toFixed(2)}%`;
+                resultElement.appendChild(predictionText);
+
+                labelContainer.appendChild(resultElement);
+            }
+
+            // Display information for the class with the highest probability
+            const info = getInfoForClass(maxClass);
+            const infoDiv = document.createElement('div');
+            infoDiv.classList.add('info-section');
+            infoDiv.innerHTML = `
+                <h2>Symptoms of ${maxClass}</h2>
+                <p>${info.symptoms}</p>
+                <h2 class="dos">Do's for ${maxClass}</h2>
+                <ul class="dos">${info.dos.map(item => `<li>${item}</li>`).join('')}</ul>
+                <h2 class="donts">Don'ts for ${maxClass}</h2>
+                <ul class="donts">${info.donts.map(item => `<li>${item}</li>`).join('')}</ul>
+            `;
+            document.getElementById('info-container').appendChild(infoDiv);
+        }
+
+        function getInfoForClass(className) {
+            const info = {
+                'Normal': {
+                    symptoms: 'No significant symptoms. Patient is healthy.',
+                    dos: ['Maintain a healthy lifestyle', 'Regular exercise', 'Balanced diet'],
+                    donts: ['Avoid smoking', 'Avoid excessive alcohol consumption']
+                },
+                'Tuberculosis': {
+                    symptoms: 'Persistent cough, weight loss, fever, night sweats.',
+                    dos: ['Take prescribed medication regularly', 'Maintain good hygiene', 'Eat a balanced diet'],
+                    donts: ['Avoid crowded places', 'Do not stop medication abruptly', 'Avoid smoking']
+                },
+                'Covid 19': {
+                    symptoms: 'Fever, dry cough, tiredness, loss of taste or smell.',
+                    dos: ['Follow quarantine guidelines', 'Wear a mask', 'Maintain social distancing'],
+                    donts: ['Avoid close contact with others', 'Do not neglect symptoms', 'Avoid large gatherings']
+                },
+                'Pneumonia': {
+                    symptoms: 'Chest pain, difficulty breathing, cough with phlegm.',
+                    dos: ['Take prescribed antibiotics', 'Rest and stay hydrated', 'Use a humidifier'],
+                    donts: ['Avoid smoking', 'Avoid cold air', 'Do not stop medication without consulting a doctor']
+                }
+            };
+
+            return info[className];
+        }
+
+        // Function to visualize LIME-like explanations (simulated)
+        async function visualizeLimeExplanations(imageElement) {
+            // Create a canvas element for LIME visualization
+            const limeCanvas = document.createElement('canvas');
+            limeCanvas.width = imageElement.width;
+            limeCanvas.height = imageElement.height;
+            const ctx = limeCanvas.getContext('2d');
+
+            // Draw the original image on the canvas
+            ctx.drawImage(imageElement, 0, 0, limeCanvas.width, limeCanvas.height);
+
+            // Simulate LIME heatmap by overlaying colored rectangles
+            const heatmapColor = 'rgba(255, 0, 0, 0.5)'; // Red color with transparency
+            const numRectangles = 10; // Number of rectangles to overlay
+            for (let i = 0; i < numRectangles; i++) {
+                const x = Math.random() * limeCanvas.width;
+                const y = Math.random() * limeCanvas.height;
+                const width = Math.random() * (limeCanvas.width / 4);
+                const height = Math.random() * (limeCanvas.height / 4);
+                ctx.fillStyle = heatmapColor;
+                ctx.fillRect(x, y, width, height);
+            }
+
+            return limeCanvas;
+        }
+
+        // Initialize the application
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

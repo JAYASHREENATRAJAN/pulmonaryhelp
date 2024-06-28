@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Summary and Metrics</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .model-summary, .metrics, .plot-container {
+            margin-top: 20px;
+        }
+        .model-summary pre, .metrics pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-size: 14px; /* Adjust font size as needed */
+        }
+        .plot-container {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Model Summary and Metrics</h1>
+
+    <div class="model-summary">
+        <h2>Validation Model Summary</h2>
+        <pre id="validation-model-summary"></pre>
+        <h2>Prediction Model Summary</h2>
+        <pre id="prediction-model-summary"></pre>
+    </div>
+
+    <div class="metrics">
+        <h2>Performance Metrics</h2>
+        <pre id="performance-metrics"></pre>
+    </div>
+
+    <div class="plot-container">
+        <h2>Performance Plot</h2>
+        <canvas id="performance-plot"></canvas>
+    </div>
+
+    <!-- TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <!-- Teachable Machine Image Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.bundle.min.js"></script>
+
+    <script>
+        // Constants for model URLs
+        const VALIDATION_MODEL_URL = "https://teachablemachine.withgoogle.com/models/RWS43Gb4-/";
+        const PREDICTION_MODEL_URL = "https://teachablemachine.withgoogle.com/models/QXHJOBbMu/";
+
+        // Function to generate model summary
+        async function generateModelSummary(model) {
+            let summary = "Model Architecture:\n";
+            summary += "Type: Convolutional Neural Network (CNN)\n\n";
+
+            summary += "Preprocessing Details:\n";
+            summary += "Image Size: 224x224\n";
+            summary += "Normalization: Pixel values scaled to [0, 1]\n\n";
+
+            summary += "Model Layers:\n";
+            model.layers.forEach((layer, index) => {
+                summary += `Layer ${index + 1}: ${layer.name}\n`;
+                summary += `Type: ${layer.getClassName()}\n`;
+                if (layer.inputShape) {
+                    summary += `Input shape: ${JSON.stringify(layer.inputShape)}\n`;
+                }
+                if (layer.outputShape) {
+                    summary += `Output shape: ${JSON.stringify(layer.outputShape)}\n`;
+                }
+                summary += `Parameters: ${layer.countParams()}\n\n`;
+            });
+            return summary;
+        }
+
+        // Function to calculate performance metrics
+        function calculateMetrics(trueLabels, predictedLabels) {
+            const classes = [...new Set(trueLabels)]; // Get unique classes
+
+            const metrics = {
+                accuracy: 0,
+                precision: {},
+                recall: {},
+                f1Score: {}
+            };
+
+            classes.forEach(cls => {
+                metrics.precision[cls] = 0;
+                metrics.recall[cls] = 0;
+                metrics.f1Score[cls] = 0;
+            });
+
+            const confusionMatrix = {};
+
+            for (let i = 0; i < trueLabels.length; i++) {
+                if (!confusionMatrix[trueLabels[i]]) {
+                    confusionMatrix[trueLabels[i]] = {};
+                }
+                if (!confusionMatrix[trueLabels[i]][predictedLabels[i]]) {
+                    confusionMatrix[trueLabels[i]][predictedLabels[i]] = 0;
+                }
+                confusionMatrix[trueLabels[i]][predictedLabels[i]]++;
+            }
+
+            let correctPredictions = 0;
+            for (const cls in confusionMatrix) {
+                for (const predCls in confusionMatrix[cls]) {
+                    if (cls === predCls) {
+                        correctPredictions += confusionMatrix[cls][predCls];
+                    }
+                    metrics.precision[cls] += confusionMatrix[cls][predCls];
+                    metrics.recall[predCls] += confusionMatrix[cls][predCls];
+                }
+            }
+
+            metrics.accuracy = correctPredictions / trueLabels.length;
+
+            for (const cls in metrics.precision) {
+                metrics.precision[cls] = metrics.precision[cls] / classes.length;
+            }
+
+            for (const cls in metrics.recall) {
+                metrics.recall[cls] = metrics.recall[cls] / classes.length;
+            }
+
+            for (const cls in metrics.precision) {
+                metrics.f1Score[cls] = 2 * (metrics.precision[cls] * metrics.recall[cls]) / (metrics.precision[cls] + metrics.recall[cls]);
+            }
+
+            return metrics;
+        }
+
+        // Function to generate performance plot
+        function generatePerformancePlot(labels, predictedProbabilities, classLabels) {
+            const ctx = document.getElementById('performance-plot').getContext('2d');
+
+            const trueLabels = labels.map(label => classLabels.indexOf(label));
+            const predictedLabels = predictedProbabilities.map(probs => probs.indexOf(Math.max(...probs)));
+
+            const metrics = calculateMetrics(trueLabels, predictedLabels);
+            const accuracy = metrics.accuracy.toFixed(2);
+            const precision = metrics.precision[classLabels[0]].toFixed(2);
+            const recall = metrics.recall[classLabels[0]].toFixed(2);
+            const f1Score = metrics.f1Score[classLabels[0]].toFixed(2);
+
+            const performanceMetrics = `Accuracy: ${accuracy}\nPrecision: ${precision}\nRecall: ${recall}\nF1-Score: ${f1Score}`;
+            document.getElementById('performance-metrics').innerText = performanceMetrics;
+
+            const performancePlot = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Accuracy', 'Precision', 'Recall', 'F1-Score'],
+                    datasets: [{
+                        label: classLabels[0],
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1,
+                        data: [accuracy, precision, recall, f1Score],
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                max: 1
+                            }
+                        }]
+                    }
+                }
+            });
+        }
+
+        // Initialize application
+        async function init() {
+            try {
+                // Load validation model
+                const validationModelURL = VALIDATION_MODEL_URL + "model.json";
+                const validationMetadataURL = VALIDATION_MODEL_URL + "metadata.json";
+                const validationModel = await tmImage.load(validationModelURL, validationMetadataURL);
+                const validationModelSummary = await generateModelSummary(validationModel.model);
+                document.getElementById('validation-model-summary').innerText = validationModelSummary;
+
+                // Load prediction model
+                const predictionModelURL = PREDICTION_MODEL_URL + "model.json";
+                const predictionMetadataURL = PREDICTION_MODEL_URL + "metadata.json";
+                const predictionModel = await tmImage.load(predictionModelURL, predictionMetadataURL);
+                const predictionModelSummary = await generateModelSummary(predictionModel.model);
+                document.getElementById('prediction-model-summary').innerText = predictionModelSummary;
+
+                // Mock data for performance metrics and plot (replace with actual data)
+                const labels = ["Class A", "Class B", "Class A", "Class A", "Class B"];
+                const predictedProbabilities = [[0.8, 0.2], [0.3, 0.7], [0.6, 0.4], [0.7, 0.3], [0.4, 0.6]];
+                const classLabels = ["Class A", "Class B"]; // Replace with actual class labels
+
+                // Generate performance plot and metrics
+                generatePerformancePlot(labels, predictedProbabilities, classLabels);
+
+                console.log("Models loaded successfully.");
+            } catch (error) {
+                console.error("Failed to load models:", error);
+            }
+        }
+
+        // Initialize the application when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

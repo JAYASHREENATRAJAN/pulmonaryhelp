@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Summary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+        h1, h2, h3 {
+            text-align: center;
+            color: #333;
+        }
+        .model-summary {
+            margin-top: 30px;
+        }
+        .model-summary pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        .image-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .image-container img {
+            max-width: 100%;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+        }
+        h2 {
+            color: #4c72af;
+        }
+        h1 {
+            color: #ccb104de;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Model Summary</h1>
+        
+        <div class="model-summary">
+            <h2>Validation Model Summary</h2>
+            <pre id="validation-model-summary"></pre>
+            
+            <h2>Prediction Model Summary</h2>
+            <pre id="prediction-model-summary"></pre>
+        </div>
+
+        <div class="image-container">
+            <h2>Performance Metrics</h2>
+            <img src="accuracy.jpg" alt="Accuracy Graph" width="600">
+            <img src="cm.jpg" alt="Confusion Matrix" width="600">
+            <img src="acc chart.jpg" alt="Test Loss Graph" width="600">
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2024 Jayashree Natrajan. All rights reserved.</p>
+        </div>
+    </div>
+
+    <!-- TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <!-- Teachable Machine Image Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+
+    <script>
+        // Constants for model URLs
+        const VALIDATION_MODEL_URL = "https://teachablemachine.withgoogle.com/models/RWS43Gb4-/";
+        const PREDICTION_MODEL_URL = "https://teachablemachine.withgoogle.com/models/BAxKGIxkh/";
+
+        // Function to generate model summary
+        function generateModelSummary(model, metadata) {
+            let summary = "Model Architecture:\n";
+            summary += `Type: ${metadata.modelType || 'Unknown (likely CNN)'}\n\n`;
+
+            summary += "Preprocessing Details:\n";
+            summary += `Image Size: ${metadata.imageSize || 'Unknown'}\n`;
+            summary += `Normalization: ${metadata.normalization || 'Unknown'}\n\n`;
+
+            summary += "Model Layers:\n";
+            model.layers.forEach((layer, index) => {
+                summary += `Layer ${index + 1}: ${layer.name}\n`;
+                summary += `Type: ${layer.getClassName()}\n`;
+                if (layer.inputShape) {
+                    summary += `Input shape: ${layer.inputShape}\n`;
+                }
+                if (layer.outputShape) {
+                    summary += `Output shape: ${layer.outputShape}\n`;
+                }
+                summary += `Parameters: ${layer.countParams()}\n\n`;
+            });
+            return summary;
+        }
+
+        // Function to get metadata (simulated example for this demonstration)
+        function getModelMetadata(modelURL) {
+            if (modelURL.includes("RWS43Gb4-")) {
+                return {
+                    modelType: "Convolutional Neural Network (CNN)",
+                    imageSize: "224x224",
+                    normalization: "Pixel values scaled to [0, 1]"
+                };
+            } else if (modelURL.includes("BAxKGIxkh")) {
+                return {
+                    modelType: "Convolutional Neural Network (CNN)",
+                    imageSize: "224x224",
+                    normalization: "Pixel values scaled to [0, 1]"
+                };
+            }
+            return {};
+        }
+
+        // Initialize application
+        async function init() {
+            try {
+                // Load validation model
+                const validationModelURL = VALIDATION_MODEL_URL + "model.json";
+                const validationMetadataURL = VALIDATION_MODEL_URL + "metadata.json";
+                const validationModel = await tmImage.load(validationModelURL, validationMetadataURL);
+                const validationMetadata = getModelMetadata(VALIDATION_MODEL_URL);
+                const validationModelSummary = generateModelSummary(validationModel.model, validationMetadata);
+                document.getElementById('validation-model-summary').innerText = validationModelSummary;
+
+                // Load prediction model
+                const predictionModelURL = PREDICTION_MODEL_URL + "model.json";
+                const predictionMetadataURL = PREDICTION_MODEL_URL + "metadata.json";
+                const predictionModel = await tmImage.load(predictionModelURL, predictionMetadataURL);
+                const predictionMetadata = getModelMetadata(PREDICTION_MODEL_URL);
+                const predictionModelSummary = generateModelSummary(predictionModel.model, predictionMetadata);
+                document.getElementById('prediction-model-summary').innerText = predictionModelSummary;
+
+                console.log("Models loaded successfully.");
+            } catch (error) {
+                console.error("Failed to load models:", error);
+            }
+        }
+
+        // Initialize the application when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            init();
+        });
+    </script>
+</body>
+</html>

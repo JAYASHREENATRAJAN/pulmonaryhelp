@@ -1,0 +1,268 @@
+body,
+html {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: repeating-linear-gradient(to bottom, #2196F3, #64B5F6, #90CAF9, #BBDEFB, #90CAF9, #64B5F6);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-left img {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.navbar a {
+    color: white;
+    padding: 14px 20px;
+    text-decoration: none;
+    text-align: center;
+}
+
+.navbar a:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+
+.content {
+    text-align: center;
+    padding: 20px;
+}
+
+.container {
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    margin: 0px auto 25px auto;
+}
+
+#projectName {
+    text-align: center;
+    font-size: 32px;
+    color: #2196F3;
+    margin-top: 0px;
+    margin-bottom: 5px;
+}
+
+#projectDescription {
+    text-align: center;
+    font-size: 24px;
+    margin-top: 0px;
+    margin-bottom: 28px;
+}
+
+#container p {
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+#image-container {
+    margin: 20px auto;
+    max-width: 300px;
+    max-height: 300px;
+    border-radius: 12px;
+    overflow: hidden; /* Ensures that the image does not overflow its container */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+}
+
+#image-container img {
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: transform 0.3s ease; /* Add smooth transition effect */
+}
+
+#image-container img:hover {
+    transform: scale(1.1); /* Add scale effect on hover */
+}
+
+.section {
+    padding: 20px;
+    margin-top: 20px;
+}
+
+#predict-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 1em;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+#predict-button:disabled {
+    background-color: #ccc; /* Change color when disabled */
+    cursor: not-allowed; /* Change cursor when disabled */
+}
+
+p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Add hover effect to paragraphs */
+.section p:hover {
+    color: #2196F3;
+    transition: color 0.3s ease;
+}
+.section li:hover {
+    color: #2196F3;
+    transition: color 0.3s ease;
+}
+/* Add hover effect to headings */
+.section h1 {
+    color: #2196F3;
+}
+.section h3{
+    color :  #1d8f86fa;
+
+}
+
+.section h1:hover {
+    color: #1449ac;
+    transition: color 0.3s linear;
+}
+.section h3:hover{
+    color:#dc3545;
+    transition:  #dc3545 0.3s ease-in;
+}
+
+/* Add shadow effect to the section */
+.section {
+    background-color: #ffffff;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow */
+    transition: box-shadow 0.3s ease; /* Smooth transition for shadow */
+}
+
+/* Add hover effect to the section */
+.section:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
+}
+
+
+
+/* Add hover effect */
+#label-container:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Add animation effect */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+#label-container div {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font: size 60px;;
+    
+    
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+
+.result-item {
+    margin-bottom: 10px;
+    opacity: 0;
+    animation: fadeIn 0.5s forwards; /* Apply animation */
+}
+
+/* Styling for image container */
+#image {
+    margin: 20px auto;
+    max-width: 300px;
+    max-height: 300px;
+    border-radius: 12px;
+    overflow: hidden; /* Ensure image stays within container */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+}
+.prediction-result {
+    margin-bottom: 5px;
+    padding: 8px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.confidence-level {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.high-confidence {
+    background-color: #283da7; /* Green for high confidence */
+    color: rgba(243, 239, 239, 0.854); /* White text for visibility */
+}
+
+.medium-confidence {
+    background-color: #ffc107; /* Yellow for medium confidence */
+    color: black; /* Black text for visibility */
+}
+
+.low-confidence {
+    background-color: #dc3545; /* Red for low confidence */
+    color: white; /* White text for visibility */
+}
+
+/* Styling for image within the container */
+#image-container img {
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: transform 0.3s ease; /* Add smooth transition effect */
+}
+
+/* Add hover effect to image */
+#image-container img:hover {
+    transform: scale(1.1); /* Scale up image on hover */
+}
+
+@media (max-width: 580px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .navbar-right {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .navbar-right a {
+        width: 100%;
+        padding: 10px;
+        text-align: left;
+    }
+}
