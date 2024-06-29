@@ -3,7 +3,7 @@
 
 Chest X-Ray Classifier is a web application that utilizes the deep learning to classify chest X-ray images. It allows users to upload chest X-ray images and predicts the condition depicted in the image.
 
-![Chest X-Ray Classifier HomePage](./image.png)
+![Chest X-Ray Classifier HomePage](./image.jpg)
 
 ## Table of Contents
 
